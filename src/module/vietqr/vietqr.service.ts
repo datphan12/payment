@@ -7,8 +7,8 @@ import ErrorResponse from './response/error.response';
 
 @Injectable()
 export default class VietQRService {
-  private readonly VALID_USERNAME = 'customer-mina-user24157';
-  private readonly VALID_PASSWORD = 'Y3VzdG9tZXItbWluYS11c2VyMjQxNTc=';
+  private readonly VALID_USERNAME = 'datphan';
+  private readonly VALID_PASSWORD = 'tadnahp2409';
   private readonly SECRET_KEY = 'asnkjsnckjsnkcjnkanxkajnckjn';
   private readonly BEARER_PREFIX = 'Bearer ';
 
