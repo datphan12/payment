@@ -62,6 +62,7 @@ export default class VietQRService {
         null,
       );
     }
+    console.log('Hung duowc roi');
 
     const transactionCallback = new TransactionCallback(
       body.transactionid,
