@@ -11,6 +11,7 @@ import VietQRService from './vietqr.service';
 @Controller('vqr')
 export default class VietQRController {
   constructor(private readonly vietQRSercive: VietQRService) {}
+
   @Post('api/token_generate')
   generateToken(@Headers('authorization') authorization: string) {
     try {
@@ -20,7 +21,7 @@ export default class VietQRController {
     }
   }
 
-  @Post('api/transaction-sync')
+  @Post('bank/api/transaction-sync')
   transactionSync(
     @Headers('authorization') authorization: string,
     @Body() body,

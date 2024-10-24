@@ -1,13 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import * as jwt from 'jsonwebtoken';
 import TransactionCallback from './model/transaction-callback';
+import SuccessResponse from './response/success.response';
+import TransactionResponseObject from './response/transaction.response';
+import ErrorResponse from './response/error.response';
 
 @Injectable()
 export default class VietQRService {
-  private readonly VALID_USERNAME = 'customer-mina-user24157 ';
+  private readonly VALID_USERNAME = 'customer-mina-user24157';
   private readonly VALID_PASSWORD = 'Y3VzdG9tZXItbWluYS11c2VyMjQxNTc=';
-  private readonly SECRET_KEY = 'your-256-bit-secret';
+  private readonly SECRET_KEY = 'asnkjsnckjsnkcjnkanxkajnckjn';
   private readonly BEARER_PREFIX = 'Bearer ';
 
   generateToken(authorizationHeader: string): {
@@ -43,22 +45,23 @@ export default class VietQRService {
     }
   }
 
-  // Phương thức để xác thực token JWT
-  validateToken = (token) => {
-    try {
-      const decoded = jwt.verify(token, this.SECRET_KEY);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
-
   transactionSync(authHeader: string, body) {
     if (!authHeader || !authHeader.startsWith(this.BEARER_PREFIX)) {
-      return 'failed';
+      throw new UnauthorizedException(
+        'Authorization header is missing or invalid',
+      );
     }
 
     const token = authHeader.substring(this.BEARER_PREFIX.length).trim();
+
+    if (!this.validateToken(token)) {
+      return new ErrorResponse(
+        true,
+        'INVALID_TOKEN',
+        'Invalid or expired token',
+        null,
+      );
+    }
 
     const transactionCallback = new TransactionCallback(
       body.transactionid,
@@ -77,13 +80,28 @@ export default class VietQRService {
 
     try {
       // Ví dụ xử lý nghiệp vụ và sinh mã reftransactionid
-      const refTransactionId = 'GeneratedRefTransactionId'; // Tạo ID của giao dịch
+      const refTransactionId = 'myreftransactionid'; // Tạo ID của giao dịch
 
       // Trả về response 200 OK với thông tin giao dịch
-      return 'Success';
+      return new SuccessResponse(
+        false,
+        null,
+        'Transaction processed successfully',
+        new TransactionResponseObject(refTransactionId),
+      );
     } catch (error) {
       // Trả về lỗi trong trường hợp có exception
-      return 'Failed';
+      return new ErrorResponse(true, 'TRANSACTION_FAILED', error.message, null);
     }
   }
+
+  // Phương thức để xác thực token JWT
+  validateToken = (token) => {
+    try {
+      const decoded = jwt.verify(token, this.SECRET_KEY);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
 }
